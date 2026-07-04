@@ -19,3 +19,9 @@ upload/uc_client/data/cache/**
 *.log
 .env
 .env.*
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
