@@ -1,0 +1,21 @@
+# Local runtime config
+upload/config/config_global.php
+upload/config/config_ucenter.php
+
+# Runtime data, cache, templates, locks and uploads.
+# Keep placeholder index files so directory structure stays in Git.
+upload/data/**
+!upload/data/
+!upload/data/**/
+!upload/data/**/index.htm
+!upload/data/**/index.html
+
+# UCenter/cache style runtime files, if present in a completed package.
+upload/uc_client/data/cache/**
+!upload/uc_client/data/cache/
+!upload/uc_client/data/cache/index.htm
+
+# Local logs and environment files
+*.log
+.env
+.env.*

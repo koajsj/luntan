@@ -1,0 +1,62 @@
+<?php exit('Access Denied');?>
+<!--{template common/header}-->
+<div class="header cl">
+	<div class="mz"><a href="javascript:history.back();"><i class="dm-c-left"></i></a></div>
+	<h2>{lang myfavorite}</h2>
+	<div class="my"><a href="index.php"><i class="dm-house"></i></a></div>
+</div>
+<div class="dhnv flex-box cl" id="dhnav_li">
+	<ul class="swiper-wrapper">
+		<a href="home.php?mod=space&uid={$_G['uid']}&do=favorite&view=me" class="swiper-slide flex<!--{if !in_array($_GET['type'], array('thread','forum','group','blog','album','article'))}--> mon<!--{/if}-->">{lang favorite_all}</a>
+		<!--{if helper_access::check_module('forum')}-->
+		<a href="home.php?mod=space&uid={$_G['uid']}&do=favorite&view=me&type=thread" class="swiper-slide flex<!--{if $_GET['type'] == 'thread'}--> mon<!--{/if}-->">{lang favorite_thread}</a>
+		<a href="home.php?mod=space&uid={$_G['uid']}&do=favorite&view=me&type=forum" class="swiper-slide flex<!--{if $_GET['type'] == 'forum'}--> mon<!--{/if}-->">{lang favorite_forum}</a>
+		<!--{/if}-->
+		<!--{if helper_access::check_module('group')}-->
+		<a href="home.php?mod=space&uid={$_G['uid']}&do=favorite&view=me&type=group" class="swiper-slide flex<!--{if $_GET['type'] == 'group'}--> mon<!--{/if}-->">{lang favorite_group}</a>
+		<!--{/if}-->
+		<!--{if helper_access::check_module('blog')}-->
+		<a href="home.php?mod=space&uid={$_G['uid']}&do=favorite&view=me&type=blog" class="swiper-slide flex<!--{if $_GET['type'] == 'blog'}--> mon<!--{/if}-->">{lang favorite_blog}</a>
+		<!--{/if}-->
+		<!--{if helper_access::check_module('album')}-->
+		<a href="home.php?mod=space&uid={$_G['uid']}&do=favorite&view=me&type=album" class="swiper-slide flex<!--{if $_GET['type'] == 'album'}--> mon<!--{/if}-->">{lang favorite_album}</a>
+		<!--{/if}-->
+		<!--{if helper_access::check_module('portal')}-->
+		<a href="home.php?mod=space&uid={$_G['uid']}&do=favorite&view=me&type=article" class="swiper-slide flex<!--{if $_GET['type'] == 'article'}--> mon<!--{/if}-->">{lang favorite_article}</a>
+		<!--{/if}-->
+		<!--{hook/space_favorite_nav_extra_mobile}-->
+	</ul>
+</div>
+<script>initdhnav('#dhnav_li');</script>
+<!--{if $_GET['type'] == 'forum'}-->
+	<!--{if $list}-->
+		<div class="findbox mt10 cl">
+			<ul>
+				<!--{loop $list $k $value}-->
+				<li class="sclist"><a href="home.php?mod=spacecp&ac=favorite&op=delete&favid=$k" class="dialog mdel"><i class="dm-error"></i></a><a href="$value['url']">{$value['icon']}{$value['title']}</a></li>
+				<!--{/loop}-->
+			</ul>
+		</div>
+	<!--{else}-->
+		<div class="threadlist_box mt10 cl">
+			<h4>{lang no_favorite_yet}</h4>
+		</div>
+	<!--{/if}-->
+<!--{else}-->
+	<!--{if $list}-->
+		<div class="findbox mt10 cl">
+			<ul>
+				<!--{loop $list $k $value}-->
+				<li class="sclist"><a href="home.php?mod=spacecp&ac=favorite&op=delete&favid=$k" class="dialog mdel"><i class="dm-error"></i></a><a href="$value['url']">{$value['icon']}{$value['title']}</a></li>
+				<!--{/loop}-->
+			</ul>
+		</div>
+	<!--{else}-->
+		<div class="threadlist_box mt10 cl">
+			<h4>{lang no_favorite_yet}</h4>
+		</div>
+	<!--{/if}-->
+<!--{/if}-->
+{$multi}
+<!--{eval $nofooter = true;}-->
+<!--{template common/footer}-->
