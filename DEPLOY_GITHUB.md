@@ -38,7 +38,7 @@ sudo bash scripts/deploy.sh
 - 生成 Discuz 配置和 UCenter 配置。
 - 自动初始化数据库、UCenter 和 Discuz 基础数据。
 - 自动创建管理员账号：`admin / qwer@1234`。
-- 生成 `upload/data/install.lock` 并配置 Nginx 阻止安装器再次访问。
+- 生成 `upload/data/install.lock` 并配置 Nginx 阻止安装器再次访问，同时拒绝公开访问配置、运行日志和数据库备份目录。
 - 修复 `upload/config` 和 `upload/data` 权限。
 
 默认使用 HTTP。若你已经准备好域名和 HTTPS 反向代理，可通过环境变量启用 Discuz 强制 HTTPS：
@@ -53,7 +53,7 @@ SERVER_NAME=your-domain.com ENABLE_HTTPS=1 sudo -E bash scripts/deploy.sh
 sudo bash /var/www/discuz-forum/repo/scripts/update.sh
 ```
 
-更新脚本会自动执行 `git fetch`、切换到 `origin/main`、PHP 语法检查、权限修复和服务重载。
+更新脚本会自动执行 `git fetch`，在临时目录完成新版本的 PHP 语法检查后再切换到 `origin/main`，随后修复权限并重载服务；预检失败时，线上工作树不会被替换。
 
 ## 4. 安全提醒
 

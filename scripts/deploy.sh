@@ -29,6 +29,19 @@ fail() {
   exit 1
 }
 
+validate_deploy_inputs() {
+  [[ "${APP_NAME}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || fail "APP_NAME contains unsupported characters."
+  [[ "${BRANCH}" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]*$ ]] || fail "BRANCH contains unsupported characters."
+  [[ "${SERVER_NAME}" = "_" || "${SERVER_NAME}" =~ ^[A-Za-z0-9][A-Za-z0-9.-]*$ ]] || fail "SERVER_NAME must be a hostname, IP address, or _."
+  [[ "${DB_NAME}" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || fail "DB_NAME must be a SQL identifier."
+  [[ "${DB_USER}" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || fail "DB_USER must be a SQL identifier."
+  [[ "${TABLE_PREFIX}" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || fail "TABLE_PREFIX must be a SQL identifier prefix."
+  [[ "${WEB_USER}" =~ ^[A-Za-z_][A-Za-z0-9_-]*$ ]] || fail "WEB_USER contains unsupported characters."
+  [[ "${WEB_GROUP}" =~ ^[A-Za-z_][A-Za-z0-9_-]*$ ]] || fail "WEB_GROUP contains unsupported characters."
+  [[ "${APP_ROOT}" =~ ^/[A-Za-z0-9_./-]*$ ]] || fail "APP_ROOT must be an absolute path without spaces."
+  [[ "${REPO_DIR}" =~ ^/[A-Za-z0-9_./-]*$ ]] || fail "REPO_DIR must be an absolute path without spaces."
+}
+
 as_root() {
   if [ "$(id -u)" -eq 0 ]; then
     "$@"
@@ -122,6 +135,7 @@ ensure_secrets() {
 ensure_database() {
   local db_pass
   db_pass="$(cat "${DB_PASS_FILE}")"
+  [[ "${db_pass}" != *"'"* && "${db_pass}" != *$'\n'* && "${db_pass}" != *$'\r'* ]] || fail "Database password file contains unsupported characters."
   log "Creating database and application user when needed"
   as_root mysql <<SQL
 CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -256,7 +270,19 @@ server {
         try_files \$uri \$uri/ =404;
     }
 
-    location ~ ^/(config|data)/.*\.(php|inc)$ {
+    location ^~ /config/ {
+        deny all;
+    }
+
+    location ^~ /data/log/ {
+        deny all;
+    }
+
+    location ^~ /data/backup/ {
+        deny all;
+    }
+
+    location ~ ^/data/backup_[^/]+/ {
         deny all;
     }
 
@@ -296,6 +322,7 @@ reload_services() {
 }
 
 main() {
+  validate_deploy_inputs
   install_packages
   ensure_services
   ensure_code
